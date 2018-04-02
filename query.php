@@ -20,7 +20,7 @@ if($color==""){
    $sql = "SELECT * from userinfo where colour='$color'"; 
 }
 
-
+// hello
 $result = $conn->query($sql);
 $jsonOutput = array();
 if ($result->num_rows > 0) {
