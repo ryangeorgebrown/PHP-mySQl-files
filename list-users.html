@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <style>
+            .successMsg {
+                display:none;
+            }
+            
+            a {
+                cursor: pointer;
+                color: blue;
+            }
+        
+        </style>
+        <!-- external bootstrap css -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+          <!-- external jquery script -->
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.js"
+  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+        
+        <script>
+        $( document ).ready(function() {
+           
+ 
+});
+            
+            function loadPHPFILE(colorType){
+                // get json file if colorType is undefined then dont pass color type
+                if(colorType==undefined){
+                     url = "query.php?colorfromURL=";
+                } else {
+                      url = "query.php?colorfromURL=" + colorType;
+                }
+              
+                 $.get(url, function(data, status){
+      //  alert("Data: " + data + "\nStatus: " + status);
+                     var jsondata;
+                     var tabledata;
+                     
+                     // parse the data to make it an object
+                 jsondata = JSON.parse(data);
+                     // setup our table html
+                    tabledata="<table class='table'><tr><th>Name</th><th>Amount</th><th>Description</th><th>Colour</th></tr>"
+                     for (i = 0; i < jsondata.length; i++) {
+                         // use for loop to go thorugh the json data object and put the values into the table rows
+                         tabledata = tabledata + "<tr><td>" + jsondata[i].name + "</td><td>" + jsondata[i].amount + "</td><td>" + jsondata[i].description + "</td><td>" + jsondata[i].colour+ "</td></tr>";
+
+}
+                     // close out the table html
+          tabledata = tabledata + "</table>";
+                     /// insert the html into the div below
+             $(".userHTML").html(tabledata);        
+    });    
+            }
+            
+            function clearForm(){
+                $("#fullName").val("");
+                $("#amountDollars").val("");
+                $("#des").val("");
+            }
+            function submit(){
+                // create a temp object to pass to the form
+                var tempObj = {
+                    fullName: $("#fullName").val(),
+                    amountDollars: $("#amountDollars").val(),
+                    description: $("#des").val(),
+                    colorType: $('input[name=colorType]:checked').val()
+                };
+                $.post("insertform.php", tempObj, function(result){
+                    if(result=="success"){
+                        // if the form submission is successful, show a thank you message and then put the form back after 5 seconds.
+                        $("#form").hide();
+                        $(".successMsg").show();
+                        setTimeout(function(){ 
+                            $(".successMsg").hide();
+                            clearForm();
+                             $("#form").show();      
+                                             }, 5000);
+                        
+                    
+                    } else {
+                        
+                    }
+                });
+            }
+            
+        </script>
+    </head>
+    <body>
+        <div id="form">
+           <!-- <form action="submit.php" method="post"> -->
+            <p>Name: <input type="text" name="fullName" id="fullName" /></p>
+            <p>Amount: 
+                <select name="amountDollars" id="amountDollars">
+                    <option>100.50</option>
+                    <option value="230.10">$230.10</option>
+                     <option value="1132.89">$1,132.89</option>
+                    <option value="10000">$10,000</option>
+                </select>
+            
+            </p>
+            <p>Description: 
+            <textarea name="des" id="des"></textarea>
+            </p>
+           <p> Favourite Colour:
+              <input type="radio" name="colorType" value="red">Red<br>
+  <input type="radio" name="colorType" value="blue">Blue<br>
+  <input type="radio" name="colorType" value="yellow">Yellow
+            </p>
+            
+          <button onclick="submit();">Submit</button> 
+               <!--   <input type="submit" value="Submit" /> -->
+                 <!--   </form> -->
+        </div>
+        <div class="successMsg">
+        <p>Thank you for submitting the form. Have a wonderful day.</p>
+        </div>
+        <button onclick="loadPHPFILE();">Load JSON FILE</button>
+      <a onclick="loadPHPFILE('red')">Red</a>
+         <a onclick="loadPHPFILE('yellow')">Yellow</a>
+         <a onclick="loadPHPFILE('blue')">Blue</a>
+        <div class="userHTML">
+                
+        </div>
+    </body>
+</html>
